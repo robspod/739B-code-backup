@@ -120,6 +120,10 @@ void stopintake(){
     spiner.stop(vex::brakeType::coast);
     spiner2.stop(vex::brakeType::coast);
 }
+void intakehold(){
+    spiner.stop(vex::brakeType::hold);
+    spiner2.stop(vex::brakeType::hold);
+}
 void lifthold(){
     lift.stop(vex::brakeType::hold);
     lift2.stop(vex::brakeType::hold);
@@ -142,6 +146,9 @@ void winchdown(){
 }
 void winchstop(){
   winch.stop(vex::brakeType::hold);
+}
+void winchdeg(int degw){
+winch.startRotateFor(-degw,vex::rotationUnits::deg,speedfor,vex::velocityUnits::pct); 
 }
 void janktest(){
   while(true){  
@@ -262,27 +269,59 @@ void autonomous(void) {
 
   
   if(choice == 1){
-    forwardin(1);
+    speed = 3;
+    intake();
+    forwardin(1.9);
+    winchdeg(1080);
+    stopintake();
+    wait(2000,msec);
+    
+    backin(1);
+    turnright(430);
+    forwardd();
+    wait(1000,msec);
     stopall();
-    vex::task::sleep(300);
-    backward();
-    vex::task::sleep(1000);
-    stopall();
+    liftup();
+    wait(3000,msec);
+    lifthold();
+    backin(1);
+    liftdown();
+    wait(3000,msec);
+    lifthold();
+
+    
+
+   
 
   }
   if(choice == 2){
-    forwardin(1);
+     speed = 3;
+     intake();
+    forwardin(1.8);
+    winchdeg(1080);
+    wait(2000,msec);
+    stopintake();
+    backin(1);
+    turnleft(430);
+    forwardd();
+    wait(1000,msec);
     stopall();
-    vex::task::sleep(300);
-    backward();
-    vex::task::sleep(1000);
-    stopall();
+    liftup();
+    wait(3500,msec);
+    lifthold();
+    backin(.9);
+    liftdown();
+    wait(3000,msec);
+    lifthold();
+  
+  
+  
   }
   if(choice == 3){
     speedfor = 40;
     lifthold();
     intake();
-    forwardin(0.7);
+    forwardin(0.8);
     speed = 1;
    
     forwardin(0.5);
@@ -290,18 +329,23 @@ void autonomous(void) {
     forwardin(.5);
     speed = 2;
     turnleft(455);
-    forwardin(1.6);
+    winchdeg(1080);
+    forwardin(1.7);
     wait(1,sec);
    
     speedpct = 80;
-    wait(400,msec);
+    stopintake();
+    wait(500,msec);
     outtake();
-    wait(400,msec);
+    wait(300,msec);
     stopintake();
     speed = 2;
     liftup();
+    
     wait(2000,msec);
+    
     speed =5;
+
     liftup();
     wait(1000,msec);
     lifthold();
@@ -316,45 +360,58 @@ void autonomous(void) {
     wait(1000,msec);
     stopall();
     stopintake();
+    winchstop();
   }
   if(choice == 4){
-    Controller1.Screen.clearScreen();
-    Controller1.Screen.print(batlevel);
     speedfor = 40;
     lifthold();
     intake();
-    forwardin(0.7);
+    forwardin(0.8);
     speed = 1;
-    stopintake();
-    forwardin(0.4);
+   
+    forwardin(0.5);
     intake();
+    winchdeg(1080);
     forwardin(.5);
     speed = 2;
-    turnright(470);
+    turnright(460);
     
-    forwardin(1);
-    intake();
-    forwardin(0.5);
-    wait(1,sec);
-    stopintake();
+    forwardd();
+    wait(2.2,sec);
+    stopall();
+   
     speedpct = 80;
-    wait(400,msec);
-    outtake();
-    wait(400,msec);
-    speed = 4;
     stopintake();
+    wait(500,msec);
+    outtake();
+    wait(200,msec);
+    stopintake();
+    speed = 2;
     liftup();
-    wait(3700,msec);
+    
+    wait(2000,msec);
+    
+    speed =5;
+
+    liftup();
+    wait(1000,msec);
     lifthold();
+    
+
     forwardd();
     wait(200,msec);
     stopall();
-    stopintake();
     speedfor = 25;
     wait(500,msec);
-    backin(1);
+    backward();
+    wait(1000,msec);
     stopall();
     stopintake();
+    winchstop();
+    liftdown();
+    wait(1000,msec);
+    lifthold();
+    
   }
 
 
@@ -364,7 +421,8 @@ void autonomous(void) {
 
 void usercontrol(void) {
   while (1) {
-
+     
+      
        if(Controller1.Axis2.value() == 0){
           lift.stop(vex::brakeType::hold);
        } 
@@ -470,14 +528,20 @@ void usercontrol(void) {
 
           }*/
           
-       if(trystop.pressing()){
-         if(Controller1.Axis2.value() > 10){
-           LIFT = 0;
-
-         }
-       else{LIFT = 1;}
-
+       if (Controller1.Axis2.position(percent) > 50){
+         speed = 4;
+         Controller1.Screen.clearScreen();
+         Controller1.Screen.setCursor(1,1);
+         Controller1.Screen.print(speed);
        }
+       if(speed == 1 or speed == 2 or speed == 3){
+        LIFT = 0;
+        
+       } 
+       else{
+         LIFT = 1;
+       }
+       
        Controller1.ButtonUp.pressed(winchup);
        Controller1.ButtonUp.released(winchstop);
        Controller1.ButtonDown.pressed(winchdown);
