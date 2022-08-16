@@ -8,23 +8,20 @@ using code = vision::code;
 brain  Brain;
 
 // VEXcode device constructors
-motor RoboticArm1_mJ1 = motor(PORT1, ratio18_1, false);
-motor RoboticArm1_mJ2 = motor(PORT2, ratio18_1, true);
-motor RoboticArm1_mJ3 = motor(PORT3, ratio18_1, false);
-motor RoboticArm1_mJ4 = motor(PORT4, ratio18_1, false);
-pot RoboticArm1_mJ1_pot = pot(Brain.ThreeWirePort.A);
-pot RoboticArm1_mJ2_pot = pot(Brain.ThreeWirePort.B);
-pot RoboticArm1_mJ3_pot = pot(Brain.ThreeWirePort.C);
-pot RoboticArm1_mJ4_pot = pot(Brain.ThreeWirePort.D);
-RoboticArm RoboticArm1 = RoboticArm(RoboticArm1_mJ1, RoboticArm1_mJ1_pot, RoboticArm1_mJ2, RoboticArm1_mJ2_pot, RoboticArm1_mJ3, RoboticArm1_mJ3_pot, RoboticArm1_mJ4, RoboticArm1_mJ4_pot);
 controller Controller1 = controller(primary);
-motor LeftDriveSmart = motor(PORT5, ratio18_1, false);
-motor RightDriveSmart = motor(PORT6, ratio18_1, true);
-gps DrivetrainGPS = gps(PORT7, 0.00, 0.00, mm, 180);
-smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainGPS, 319.19, 320, 40, mm, 1);
-led LED = led(Brain.ThreeWirePort.H);
-digital_in DigitalInG = digital_in(Brain.ThreeWirePort.G);
-digital_out DigitalOutF = digital_out(Brain.ThreeWirePort.F);
+motor leftMotorA = motor(PORT7, ratio18_1, false);
+motor leftMotorB = motor(PORT16, ratio18_1, false);
+motor_group LeftDriveSmart = motor_group(leftMotorA, leftMotorB);
+motor rightMotorA = motor(PORT9, ratio18_1, true);
+motor rightMotorB = motor(PORT10, ratio18_1, true);
+motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB);
+inertial TurnGyroSmart = inertial(PORT20);
+smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, TurnGyroSmart, 319.19, 320, 40, mm, 1);
+motor Motor18 = motor(PORT15, ratio18_1, true);
+motor Motor3 = motor(PORT17, ratio18_1, false);
+motor Motor11 = motor(PORT12, ratio18_1, false);
+motor claw = motor(PORT2, ratio18_1, false);
+led LEDA = led(Brain.ThreeWirePort.A);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
@@ -38,12 +35,12 @@ bool RemoteControlCodeEnabled = true;
 void vexcodeInit( void ) {
   Brain.Screen.print("Device initialization...");
   Brain.Screen.setCursor(2, 1);
-  // calibrate the drivetrain GPS
+  // calibrate the drivetrain gyro
   wait(200, msec);
-  DrivetrainGPS.calibrate();
-  Brain.Screen.print("Calibrating GPS for Drivetrain");
-  // wait for the GPS calibration process to finish
-  while (DrivetrainGPS.isCalibrating()) {
+  TurnGyroSmart.calibrate();
+  Brain.Screen.print("Calibrating Gyro for Drivetrain");
+  // wait for the gyro calibration process to finish
+  while (TurnGyroSmart.isCalibrating()) {
     wait(25, msec);
   }
   // reset the screen now that the calibration is complete

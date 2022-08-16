@@ -3,13 +3,13 @@ using namespace vex;
 extern brain Brain;
 
 // VEXcode devices
-extern RoboticArm RoboticArm1;
 extern controller Controller1;
 extern smartdrive Drivetrain;
-extern gps DrivetrainGPS;
-extern led LED;
-extern digital_in DigitalInG;
-extern digital_out DigitalOutF;
+extern motor Motor18;
+extern motor Motor3;
+extern motor Motor11;
+extern motor claw;
+extern led LEDA;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
